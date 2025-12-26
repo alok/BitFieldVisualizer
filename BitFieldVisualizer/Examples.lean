@@ -198,9 +198,9 @@ def spiControl : BitFieldLabels 16 :=
   ]
 
 /-- Example: SPI master mode, enabled, 8-bit, mode 0 -/
-def spiConfig1 : BitVec 16 := 0b0000000001000100  -- MSTR | SPE
+def spiConfig1 : BitVec 16 := 0b0000000000000000  -- MSTR | SPE
 
-#html showBitField spiConfig1 spiControl (some "SPI CR1: Master Mode Enabled")
+#html showBitField spiConfig1 spiControl "SPI CR1: Master Mode Enabled"
 
 /-- Example: GPIO configuration register. -/
 def gpioMode : BitFieldLabels 8 :=

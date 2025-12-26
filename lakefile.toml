@@ -1,6 +1,10 @@
 name = "BitFieldVisualizer"
 version = "0.1.0"
 defaultTargets = ["BitFieldVisualizer"]
+keywords = ["widget", "bitvec", "bitfield", "visualization", "infoview", "proofwidgets"]
+description = "Lean 4 infoview widget for visualizing labeled bitfields with ProofWidgets4"
+license = "MIT"
+packagesDir = ".lake/packages"
 
 [[require]]
 name = "proofwidgets"

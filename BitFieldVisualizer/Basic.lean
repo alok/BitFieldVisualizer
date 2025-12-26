@@ -2,7 +2,7 @@ import ProofWidgets.Component.HtmlDisplay
 import ProofWidgets.Component.Panel.Basic
 import Lean.Data.Json
 
-open Lean Widget ProofWidgets
+open Lean Widget ProofWidgets Jsx
 
 /-!
 # BitField Visualizer Widget
@@ -100,6 +100,28 @@ def bitfieldStyles : String :=
   border-radius: 4px;
   min-width: 28px;
   cursor: default;
+  position: relative;
+}
+.bit-cell::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #333;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: nowrap;
+  z-index: 100;
+  margin-top: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.05s;
+}
+.bit-cell:hover::after {
+  opacity: 1;
 }
 .bit-cell-set {
   background-color: #4caf50;
@@ -180,15 +202,21 @@ def Nat.toBinStringPadded (n width : Nat) : String :=
 def renderBitCell (info : BitInfo) : Html :=
   let cellClass := if info.value then "bit-cell bit-cell-set" else "bit-cell bit-cell-unset"
   let valueStr := if info.value then "1" else "0"
-  let labelStr := info.label.getD s!"b{info.index}"
-  let titleStr := match info.description with
-    | some d => s!"Bit {info.index}: {labelStr} - {d}"
-    | none => s!"Bit {info.index}: {labelStr}"
-  Html.element "div" #[attr "class" cellClass, attr "title" titleStr] #[
-    Html.element "span" #[attr "class" "bit-index"] #[.text (toString info.index)],
-    Html.element "span" #[attr "class" "bit-value"] #[.text valueStr],
-    Html.element "span" #[attr "class" "bit-label"] #[.text labelStr]
-  ]
+  -- Build tooltip: just the description (label already visible in cell)
+  let tooltip := info.description.getD ""
+  let attrs : Array (String × Json) := #[attr "class" cellClass, attr "data-tooltip" tooltip]
+  -- Only show label if there's a custom one (avoid redundant "b0, b1..." with index)
+  let children : Array Html := match info.label with
+    | some lbl => #[
+        Html.element "span" #[attr "class" "bit-index"] #[.text (toString info.index)],
+        Html.element "span" #[attr "class" "bit-value"] #[.text valueStr],
+        Html.element "span" #[attr "class" "bit-label"] #[.text lbl]
+      ]
+    | none => #[
+        Html.element "span" #[attr "class" "bit-index"] #[.text (toString info.index)],
+        Html.element "span" #[attr "class" "bit-value"] #[.text valueStr]
+      ]
+  Html.element "div" attrs children
 
 /-- Render legend for set bits. -/
 def renderLegend (bits : List BitInfo) : Html :=
@@ -212,7 +240,7 @@ def renderLegend (bits : List BitInfo) : Html :=
           ]
       Html.element "div" #[attr "class" "legend-item"] children
     Html.element "div" #[attr "class" "legend"] #[
-      Html.element "div" #[attr "style" "font-weight: bold; margin-bottom: 4px"] #[.text "Set bits:"],
+      Html.element "div" #[("style", json% {fontWeight: "bold", marginBottom: "4px"})] #[.text "Set bits:"],
       Html.element "div" #[] items.toArray
     ]
 
