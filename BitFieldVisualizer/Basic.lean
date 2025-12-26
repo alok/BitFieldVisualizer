@@ -160,6 +160,22 @@ def bitfieldStyles : String :=
 /-- Helper to create string attribute for Html.element -/
 def attr (name value : String) : String × Json := (name, Json.str value)
 
+/-- Convert a natural number to a binary string. -/
+def Nat.toBinString (n : Nat) : String :=
+  if n == 0 then "0"
+  else go n ""
+where
+  go : Nat → String → String
+  | 0, acc => acc
+  | n+1, acc => go ((n+1) / 2) (toString ((n+1) % 2) ++ acc)
+  termination_by n => n
+
+/-- Convert a natural number to a binary string, padded to given width. -/
+def Nat.toBinStringPadded (n width : Nat) : String :=
+  let s := n.toBinString
+  let padding := width - s.length
+  String.ofList (List.replicate padding '0') ++ s
+
 /-- Render a single bit cell as HTML. -/
 def renderBitCell (info : BitInfo) : Html :=
   let cellClass := if info.value then "bit-cell bit-cell-set" else "bit-cell bit-cell-unset"
@@ -208,7 +224,7 @@ def renderBitFieldHtml {n : Nat} (bv : BitVec n) (labels : BitFieldLabels n)
   let bitsReversed := bits.reverse
   let bitCells := bitsReversed.map renderBitCell
   let hexStr := s!"0x{bv.toHex}"
-  let binStr := s!"0b{String.ofList (bv.toNat.toDigits 2)}"
+  let binStr := s!"0b{bv.toNat.toBinStringPadded n}"
   let titleStr := title.getD s!"BitVec {n}"
   Html.element "div" #[attr "class" "bitfield-container"] #[
     Html.element "style" #[] #[.text bitfieldStyles],
