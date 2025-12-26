@@ -144,4 +144,4 @@ import BitFieldVisualizer.Composable
 
 ## License
 
-MIT
+Apache-2.0

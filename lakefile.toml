@@ -3,13 +3,18 @@ version = "0.1.0"
 defaultTargets = ["BitFieldVisualizer"]
 keywords = ["widget", "bitvec", "bitfield", "visualization", "infoview", "proofwidgets"]
 description = "Lean 4 infoview widget for visualizing labeled bitfields with ProofWidgets4"
-license = "MIT"
+license = "Apache-2.0"
 packagesDir = ".lake/packages"
 
 [[require]]
 name = "proofwidgets"
 git = "https://github.com/leanprover-community/ProofWidgets4"
-rev = "v0.0.83"
+rev = "main"
+
+[[require]]
+name = "plausible"
+git = "https://github.com/leanprover-community/plausible"
+rev = "main"
 
 [[lean_lib]]
 name = "BitFieldVisualizer"
