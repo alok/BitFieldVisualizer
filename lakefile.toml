@@ -1,0 +1,15 @@
+name = "BitFieldVisualizer"
+version = "0.1.0"
+defaultTargets = ["BitFieldVisualizer"]
+
+[[require]]
+name = "proofwidgets"
+git = "https://github.com/leanprover-community/ProofWidgets4"
+rev = "v0.0.83"
+
+[[lean_lib]]
+name = "BitFieldVisualizer"
+
+[[lean_exe]]
+name = "bitfieldvisualizer"
+root = "Main"
