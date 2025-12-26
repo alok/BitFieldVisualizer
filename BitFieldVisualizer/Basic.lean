@@ -157,6 +157,9 @@ def bitfieldStyles : String :=
 }
 "
 
+/-- Helper to create string attribute for Html.element -/
+def attr (name value : String) : String × Json := (name, Json.str value)
+
 /-- Render a single bit cell as HTML. -/
 def renderBitCell (info : BitInfo) : Html :=
   let cellClass := if info.value then "bit-cell bit-cell-set" else "bit-cell bit-cell-unset"
@@ -165,17 +168,17 @@ def renderBitCell (info : BitInfo) : Html :=
   let titleStr := match info.description with
     | some d => s!"Bit {info.index}: {labelStr} - {d}"
     | none => s!"Bit {info.index}: {labelStr}"
-  Html.element "div" #[("class", cellClass), ("title", titleStr)] #[
-    Html.element "span" #[("class", "bit-index")] #[.text (toString info.index)],
-    Html.element "span" #[("class", "bit-value")] #[.text valueStr],
-    Html.element "span" #[("class", "bit-label")] #[.text labelStr]
+  Html.element "div" #[attr "class" cellClass, attr "title" titleStr] #[
+    Html.element "span" #[attr "class" "bit-index"] #[.text (toString info.index)],
+    Html.element "span" #[attr "class" "bit-value"] #[.text valueStr],
+    Html.element "span" #[attr "class" "bit-label"] #[.text labelStr]
   ]
 
 /-- Render legend for set bits. -/
 def renderLegend (bits : List BitInfo) : Html :=
   let setBits := bits.filter (·.value)
   if setBits.isEmpty then
-    Html.element "div" #[("class", "legend")] #[
+    Html.element "div" #[attr "class" "legend"] #[
       Html.element "em" #[] #[.text "No bits set"]
     ]
   else
@@ -183,17 +186,17 @@ def renderLegend (bits : List BitInfo) : Html :=
       let labelStr := info.label.getD s!"bit_{info.index}"
       let children : Array Html := match info.description with
         | some d => #[
-            Html.element "span" #[("class", "legend-bit")] #[.text s!"[{info.index}]"],
-            Html.element "span" #[("class", "legend-label")] #[.text labelStr],
-            Html.element "span" #[("class", "legend-desc")] #[.text s!"({d})"]
+            Html.element "span" #[attr "class" "legend-bit"] #[.text s!"[{info.index}]"],
+            Html.element "span" #[attr "class" "legend-label"] #[.text labelStr],
+            Html.element "span" #[attr "class" "legend-desc"] #[.text s!"({d})"]
           ]
         | none => #[
-            Html.element "span" #[("class", "legend-bit")] #[.text s!"[{info.index}]"],
-            Html.element "span" #[("class", "legend-label")] #[.text labelStr]
+            Html.element "span" #[attr "class" "legend-bit"] #[.text s!"[{info.index}]"],
+            Html.element "span" #[attr "class" "legend-label"] #[.text labelStr]
           ]
-      Html.element "div" #[("class", "legend-item")] children
-    Html.element "div" #[("class", "legend")] #[
-      Html.element "div" #[("style", "font-weight: bold; margin-bottom: 4px")] #[.text "Set bits:"],
+      Html.element "div" #[attr "class" "legend-item"] children
+    Html.element "div" #[attr "class" "legend"] #[
+      Html.element "div" #[attr "style" "font-weight: bold; margin-bottom: 4px"] #[.text "Set bits:"],
       Html.element "div" #[] items.toArray
     ]
 
@@ -207,11 +210,11 @@ def renderBitFieldHtml {n : Nat} (bv : BitVec n) (labels : BitFieldLabels n)
   let hexStr := s!"0x{bv.toHex}"
   let binStr := s!"0b{String.ofList (bv.toNat.toDigits 2)}"
   let titleStr := title.getD s!"BitVec {n}"
-  Html.element "div" #[("class", "bitfield-container")] #[
+  Html.element "div" #[attr "class" "bitfield-container"] #[
     Html.element "style" #[] #[.text bitfieldStyles],
-    Html.element "div" #[("class", "bitfield-title")] #[.text titleStr],
-    Html.element "div" #[("class", "hex-display")] #[.text s!"{hexStr} = {binStr}"],
-    Html.element "div" #[("class", "bitfield-grid")] bitCells.toArray,
+    Html.element "div" #[attr "class" "bitfield-title"] #[.text titleStr],
+    Html.element "div" #[attr "class" "hex-display"] #[.text s!"{hexStr} = {binStr}"],
+    Html.element "div" #[attr "class" "bitfield-grid"] bitCells.toArray,
     renderLegend bits
   ]
 
